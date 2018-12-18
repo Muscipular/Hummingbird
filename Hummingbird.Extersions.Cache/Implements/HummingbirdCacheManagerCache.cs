@@ -7,25 +7,25 @@ namespace Hummingbird.Extersions.Cache
 {
     public class HummingbirdCacheManagerCache<T> : IHummingbirdCache<T>
     {
-        private readonly ICacheManager<object> _cacheManager;
-        private readonly IHummingbirdCacheConfig _option;
+        private readonly ICacheManager<T> _cacheManager;
+        private readonly string _CacheRegion;
 
         private string PaddingPrefix(string region)
         {
-            return $"{_option.CacheRegion}:{region}";
+            return $"{_CacheRegion}:{region}";
         }
 
         public HummingbirdCacheManagerCache(
-            ICacheManager<object> cacheManager,
-            IHummingbirdCacheConfig option)
+            ICacheManager<T> cacheManager,
+            string CacheRegion)
         {
-            _option = option;
+            _CacheRegion = CacheRegion;
             _cacheManager = cacheManager;
         }
 
         public void Add(string key, T value, TimeSpan ttl, string region)
         {
-            _cacheManager.Add(new CacheItem<object>(key, PaddingPrefix(region), value, ExpirationMode.Absolute, ttl));
+            _cacheManager.Put(new CacheItem<T>(key, PaddingPrefix(region), value, ExpirationMode.Absolute, ttl));
         }
 
         public bool Exists(string key, string region)
@@ -41,6 +41,11 @@ namespace Hummingbird.Extersions.Cache
         public void ClearRegion(string region)
         {
             _cacheManager.ClearRegion(PaddingPrefix(region));
+        }
+
+        public bool Delete(string key, string region)
+        {
+            return _cacheManager.Remove(key, PaddingPrefix(region));
         }
     }
 }

@@ -1,0 +1,45 @@
+﻿{
+  "$schema": "http://cachemanager.michaco.net/schemas/cachemanager.json#",
+  "redis": [
+    {
+      "key": "redis",
+      "database": 0,
+      "connectionString": "132.232.7.203:6379,password=,allowAdmin=true,ssl=false,abortConnect=false,connectTimeout=5000"
+    }
+  ],
+  "cacheManagers": [
+    {
+      "maxRetries": 1000,
+      "name": "HummingbirdCache",
+      "retryTimeout": 100,
+      "updateMode":  "Up",
+      "backplane": {
+        "key": "redis",
+        "knownType": "Redis",
+        "channelName": "redisChannel"
+      },
+      "loggerFactory": {
+        "knownType": "Microsoft"
+      },
+      "serializer": {
+        "knownType": "Json"
+      },
+      "handles": [
+        {
+          "knownType": "MsMemory",
+          "enablePerformanceCounters": true,
+          "enableStatistics": true,
+          "expirationMode": "Absolute",
+          "expirationTimeout": "0:0:23",
+          "isBackplaneSource": false,
+          "name": "sys cache"
+        },
+        {
+          "knownType": "Redis",
+          "key": "redis",
+          "isBackplaneSource": true
+        }
+      ]
+    }
+  ]
+}
